@@ -10,12 +10,12 @@
       /* Ensures content is hidden on larger screens */
       @media (min-width: 640px) {
         body::before {
-          content: "Please view this design on a mobile device.";
+          content: "Iltimos, bu sahifani mobil qurilmada oching!";
           display: block;
           text-align: center;
           font-size: 24px;
           padding: 20px;
-          color: #111418;
+          color: red;
         }
         body > * {
           display: none;
@@ -46,7 +46,7 @@
 
     <main class="flex-grow px-4 py-6 flex justify-center items-center">
       <div id="loading" class="spinner"></div>
-      <div id="branch-list" class="space-y-4 hidden">
+      <div id="branch-list" class="space-y-4 hidden w-full">
         <!-- Branch data will be injected here -->
       </div>
     </main>
@@ -77,7 +77,7 @@
 
           // Create a total staff item
           const totalItem = document.createElement('div');
-          totalItem.className = 'bg-white shadow-lg rounded-lg p-4 flex items-center justify-between';
+          totalItem.className = 'bg-white shadow-lg rounded-lg p-4 flex items-center justify-between w-full';
           totalItem.innerHTML = `
             <div>
               <p class="text-lg font-semibold">Umumiy xodimlar</p>
@@ -90,7 +90,7 @@
           // Create individual branch items
           data.forEach(branch => {
             const branchItem = document.createElement('div');
-            branchItem.className = 'bg-white shadow-lg rounded-lg p-4 flex items-center justify-between';
+            branchItem.className = 'bg-white shadow-lg rounded-lg p-4 flex items-center justify-between w-full';
             
             branchItem.innerHTML = `
               <div>
