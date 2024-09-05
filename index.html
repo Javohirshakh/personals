@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Branch Overview</title>
+    <title>Apexpizza</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <style>
@@ -21,31 +21,73 @@
           display: none;
         }
       }
+
+      /* Loading Spinner */
+      .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-left-color: #3498db;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
     </style>
   </head>
   <body class="min-h-screen flex flex-col justify-between bg-gray-50 text-gray-900" style="font-family: Manrope, sans-serif;">
-    <header class="bg-white shadow-md p-4 text-center">
-      <h1 class="text-2xl font-bold">Branch Overview</h1>
+    <header class="bg-white shadow-md p-4 flex items-center justify-between">
+      <img src="assets/logo.png" alt="Logo" class="h-8 w-8">
+      <h1 class="text-xl font-bold">Apexpizza</h1>
+      <div class="h-8 w-8"></div> <!-- Placeholder for symmetry -->
     </header>
 
-    <main class="flex-grow px-4 py-6">
-      <div id="branch-list" class="space-y-4">
+    <main class="flex-grow px-4 py-6 flex justify-center items-center">
+      <div id="loading" class="spinner"></div>
+      <div id="branch-list" class="space-y-4 hidden">
         <!-- Branch data will be injected here -->
       </div>
     </main>
 
     <footer class="bg-white p-4 text-center border-t">
-      <p class="text-sm text-gray-500">© 2024 Your Company</p>
+      <p class="text-sm text-gray-500">© 2018-2024 Apexpizza</p>
     </footer>
 
     <script>
       async function fetchBranchData() {
         try {
           const response = await fetch('https://script.google.com/macros/s/AKfycby5jBRVsQ_m1yIgH91coqqppyheCxu1BaxSVgXWPi0LtifBY4ISFfPeG_pu6TQW0fcA6g/exec?route=database');
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
           const data = await response.json();
           const branchList = document.getElementById('branch-list');
+          const loading = document.getElementById('loading');
+
+          // Calculate total staff across all branches
+          const totalStaff = data.reduce((sum, branch) => sum + branch.amountOfPersonal, 0);
+
+          loading.classList.add('hidden');
+          branchList.classList.remove('hidden');
           branchList.innerHTML = '';
 
+          // Create a total staff item
+          const totalItem = document.createElement('div');
+          totalItem.className = 'bg-white shadow-lg rounded-lg p-4 flex items-center justify-between';
+          totalItem.innerHTML = `
+            <div>
+              <p class="text-lg font-semibold">Umumiy xodimlar</p>
+              <p class="text-sm text-gray-500">Barcha filiallar xodimlari</p>
+            </div>
+            <div class="text-2xl font-bold text-green-600">${totalStaff}</div>
+          `;
+          branchList.appendChild(totalItem);
+
+          // Create individual branch items
           data.forEach(branch => {
             const branchItem = document.createElement('div');
             branchItem.className = 'bg-white shadow-lg rounded-lg p-4 flex items-center justify-between';
@@ -53,7 +95,7 @@
             branchItem.innerHTML = `
               <div>
                 <p class="text-lg font-semibold">${branch.branch}</p>
-                <p class="text-sm text-gray-500">${branch.amountOfPersonal} staff members</p>
+                <p class="text-sm text-gray-500">${branch.amountOfPersonal} ta xodim</p>
               </div>
               <div class="text-2xl font-bold text-blue-600">${branch.amountOfPersonal}</div>
             `;
@@ -61,6 +103,12 @@
           });
         } catch (error) {
           console.error('Error fetching branch data:', error);
+          const branchList = document.getElementById('branch-list');
+          const loading = document.getElementById('loading');
+
+          loading.classList.add('hidden');
+          branchList.classList.remove('hidden');
+          branchList.innerHTML = `<p class="text-red-500">Xatolik... Keyinroq urinib ko'ring.</p>`;
         }
       }
 
