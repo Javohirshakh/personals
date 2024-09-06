@@ -58,7 +58,7 @@
     <script>
       async function fetchBranchData() {
         try {
-          const response = await fetch('https://script.google.com/macros/s/AKfycby5jBRVsQ_m1yIgH91coqqppyheCxu1BaxSVgXWPi0LtifBY4ISFfPeG_pu6TQW0fcA6g/exec?route=database');
+          const response = await fetch('https://script.google.com/macros/s/AKfycbwTp40XXCQodxybeCHEG5-R0sTVT4QeflfDC3nDjCNURqSm7DCjltVQvyhcde8SkokCJw/exec?route=database');
           
           if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -87,17 +87,23 @@
           `;
           branchList.appendChild(totalItem);
 
-          // Create individual branch items
+          // Create individual branch items with `iron` and `vacant` data
           data.forEach(branch => {
             const branchItem = document.createElement('div');
-            branchItem.className = 'bg-white shadow-lg rounded-lg p-4 flex items-center justify-between w-full';
+            branchItem.className = 'bg-white shadow-lg rounded-lg p-4 w-full space-y-2';
             
             branchItem.innerHTML = `
-              <div>
-                <p class="text-lg font-semibold">${branch.branch}</p>
-                <p class="text-sm text-gray-500">${branch.amountOfPersonal} ta xodim</p>
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-lg font-semibold">${branch.branch}</p>
+                  <p class="text-sm text-gray-500">${branch.amountOfPersonal} ta xodim</p>
+                </div>
+                <div class="text-2xl font-bold text-blue-600">${branch.amountOfPersonal}</div>
               </div>
-              <div class="text-2xl font-bold text-blue-600">${branch.amountOfPersonal}</div>
+              <div class="flex justify-between text-sm text-gray-500">
+                <p class="text-yellow-500">Jelezniy grafik: ${branch.iron}</p>
+                <p class="text-red-500">Vakansiya: ${branch.vacant}</p>
+              </div>
             `;
             branchList.appendChild(branchItem);
           });
