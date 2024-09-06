@@ -68,22 +68,30 @@
           const branchList = document.getElementById('branch-list');
           const loading = document.getElementById('loading');
 
-          // Calculate total staff across all branches
+          // Calculate total staff, iron, and vacancies across all branches
           const totalStaff = data.reduce((sum, branch) => sum + branch.amountOfPersonal, 0);
+          const totalIron = data.reduce((sum, branch) => sum + branch.iron, 0);
+          const totalVacant = data.reduce((sum, branch) => sum + branch.vacant, 0);
 
           loading.classList.add('hidden');
           branchList.classList.remove('hidden');
           branchList.innerHTML = '';
 
-          // Create a total staff item
+          // Create a total staff, iron, and vacancy item
           const totalItem = document.createElement('div');
-          totalItem.className = 'bg-white shadow-lg rounded-lg p-4 flex items-center justify-between w-full';
+          totalItem.className = 'bg-white shadow-lg rounded-lg p-4 flex flex-col items-start justify-between w-full';
           totalItem.innerHTML = `
-            <div>
-              <p class="text-lg font-semibold">Umumiy xodimlar</p>
-              <p class="text-sm text-gray-500">Barcha filiallar xodimlari</p>
+            <div class="flex justify-between w-full">
+              <div>
+                <p class="text-lg font-semibold">Umumiy xodimlar</p>
+                <p class="text-sm text-gray-500">Barcha filiallar xodimlari</p>
+              </div>
+              <div class="text-2xl font-bold text-green-600">${totalStaff}</div>
             </div>
-            <div class="text-2xl font-bold text-green-600">${totalStaff}</div>
+            <div class="flex justify-between w-full text-sm text-gray-500 mt-2">
+              <p class="text-yellow-500">Jelezniy grafik: ${totalIron}</p>
+              <p class="text-red-500">Vakansiya: ${totalVacant}</p>
+            </div>
           `;
           branchList.appendChild(totalItem);
 
