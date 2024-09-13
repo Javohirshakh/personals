@@ -5,49 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Apexpizza</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" />
+    <link rel="stylesheet" href="styles.css" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <style>
-      /* Ensures content is hidden on larger screens */
-      @media (min-width: 640px) {
-        body::before {
-          content: "Iltimos, bu sahifani mobil qurilmada oching!";
-          display: block;
-          text-align: center;
-          font-size: 24px;
-          padding: 20px;
-          color: red;
-        }
-        body > * {
-          display: none;
-        }
-      }
-
-      /* Loading Spinner */
-      .spinner {
-        border: 4px solid rgba(0, 0, 0, 0.1);
-        border-left-color: #3498db;
-        border-radius: 50%;
-        width: 36px;
-        height: 36px;
-        animation: spin 1s linear infinite;
-      }
-
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-    </style>
   </head>
-  <body class="min-h-screen flex flex-col justify-between bg-gray-50 text-gray-900" style="font-family: Manrope, sans-serif;">
+  <body class="min-h-screen bg-gray-50 text-gray-900" style="font-family: Manrope, sans-serif;">
     <header class="bg-white shadow-md p-4 flex items-center justify-between">
       <img src="assets/logo.png" alt="Logo" class="h-8 w-8">
       <h1 class="text-xl font-bold">Apexpizza</h1>
-      <div class="h-8 w-8"></div> <!-- Placeholder for symmetry -->
+      <div class="h-8 w-8"></div>
     </header>
 
-    <main class="flex-grow px-4 py-6 flex justify-center items-center">
-      <div id="loading" class="spinner"></div>
-      <div id="branch-list" class="space-y-4 hidden w-full">
-        <!-- Branch data will be injected here -->
+    <!-- Tab navigation for mobile (visible only on small screens) -->
+    <nav id="mobile-tabs" class="flex justify-around bg-white p-4 border-t">
+      <button data-tab="main" class="tab-button active">Main</button>
+      <button data-tab="courier" class="tab-button">Courier</button>
+      <button data-tab="franchise" class="tab-button">Franchise</button>
+    </nav>
+
+    <main class="flex-grow px-4 py-6">
+      <!-- Loader -->
+      <div id="loading" class="spinner hidden"></div>
+
+      <div id="content" class="flex flex-col sm:flex-row justify-between space-y-4 sm:space-y-0 sm:space-x-4">
+        <!-- Main data (route=main) -->
+        <div class="column bg-white shadow-lg rounded-lg p-4 w-full space-y-4 tab-content active" id="main-column">
+          <div class="text-center font-bold text-lg">Main Branches</div>
+          <div id="main-branch-list" class="space-y-2"></div>
+        </div>
+
+        <!-- Courier data (route=courier) -->
+        <div class="column bg-white shadow-lg rounded-lg p-4 w-full space-y-4 tab-content hidden" id="courier-column">
+          <div class="text-center font-bold text-lg">Courier Branches</div>
+          <div id="courier-branch-list" class="space-y-2"></div>
+        </div>
+
+        <!-- Franchise data (route=franchise) -->
+        <div class="column bg-white shadow-lg rounded-lg p-4 w-full space-y-4 tab-content hidden" id="franchise-column">
+          <div class="text-center font-bold text-lg">Franchise Branches</div>
+          <div id="franchise-branch-list" class="space-y-2"></div>
+        </div>
       </div>
     </main>
 
@@ -55,78 +51,6 @@
       <p class="text-sm text-gray-500">© 2018-2024 Apexpizza</p>
     </footer>
 
-    <script>
-      async function fetchBranchData() {
-        try {
-          const response = await fetch('https://script.google.com/macros/s/AKfycbwTp40XXCQodxybeCHEG5-R0sTVT4QeflfDC3nDjCNURqSm7DCjltVQvyhcde8SkokCJw/exec?route=database');
-          
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-
-          const data = await response.json();
-          const branchList = document.getElementById('branch-list');
-          const loading = document.getElementById('loading');
-
-          // Calculate total staff, iron, and vacancies across all branches
-          const totalStaff = data.reduce((sum, branch) => sum + branch.amountOfPersonal, 0);
-          const totalIron = data.reduce((sum, branch) => sum + branch.iron, 0);
-          const totalVacant = data.reduce((sum, branch) => sum + branch.vacant, 0);
-
-          loading.classList.add('hidden');
-          branchList.classList.remove('hidden');
-          branchList.innerHTML = '';
-
-          // Create a total staff, iron, and vacancy item
-          const totalItem = document.createElement('div');
-          totalItem.className = 'bg-white shadow-lg rounded-lg p-4 flex flex-col items-start justify-between w-full';
-          totalItem.innerHTML = `
-            <div class="flex justify-between w-full">
-              <div>
-                <p class="text-lg font-semibold">Umumiy xodimlar</p>
-                <p class="text-sm text-gray-500">Barcha filiallar xodimlari</p>
-              </div>
-              <div class="text-2xl font-bold text-green-600">${totalStaff}</div>
-            </div>
-            <div class="flex justify-between w-full text-sm text-gray-500 mt-2">
-              <p class="text-yellow-500">Jelezniy grafik: ${totalIron}</p>
-              <p class="text-red-500">Vakansiya: ${totalVacant}</p>
-            </div>
-          `;
-          branchList.appendChild(totalItem);
-
-          // Create individual branch items with `iron` and `vacant` data
-          data.forEach(branch => {
-            const branchItem = document.createElement('div');
-            branchItem.className = 'bg-white shadow-lg rounded-lg p-4 w-full space-y-2';
-            
-            branchItem.innerHTML = `
-              <div class="flex items-center justify-between">
-                <div>
-                  <p class="text-lg font-semibold">${branch.branch}</p>
-                  <p class="text-sm text-gray-500">${branch.amountOfPersonal} ta xodim</p>
-                </div>
-                <div class="text-2xl font-bold text-blue-600">${branch.amountOfPersonal}</div>
-              </div>
-              <div class="flex justify-between text-sm text-gray-500">
-                <p class="text-yellow-500">Jelezniy grafik: ${branch.iron}</p>
-                <p class="text-red-500">Vakansiya: ${branch.vacant}</p>
-              </div>
-            `;
-            branchList.appendChild(branchItem);
-          });
-        } catch (error) {
-          console.error('Error fetching branch data:', error);
-          const branchList = document.getElementById('branch-list');
-          const loading = document.getElementById('loading');
-
-          loading.classList.add('hidden');
-          branchList.classList.remove('hidden');
-          branchList.innerHTML = `<p class="text-red-500">Xatolik... Keyinroq urinib ko'ring.</p>`;
-        }
-      }
-
-      fetchBranchData();
-    </script>
+    <script src="scripts.js"></script>
   </body>
 </html>
