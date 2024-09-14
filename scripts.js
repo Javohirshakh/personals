@@ -7,6 +7,8 @@ let previousData = {
   franchise: null,
 };
 
+let initialLoad = true; // Флаг для отображения лоадера только один раз
+
 /**
  * Fetches data from a given route and injects it into the specified container
  * @param {string} route The API route (main, courier, franchise)
@@ -32,10 +34,13 @@ async function fetchData(route, containerId) {
 
     branchList.innerHTML = ''; // Clear the container
 
-    // Create a total staff, iron, and vacancy item for all branches
-    const totalStaff = data.reduce((sum, branch) => sum + branch.amountOfPersonal, 0);
-    const totalIron = data.reduce((sum, branch) => sum + branch.iron || 0, 0);
-    const totalVacant = data.reduce((sum, branch) => sum + branch.vacant, 0);
+    // Sort branches by number of vacancies in descending order
+    data.sort((a, b) => b.vacant - a.vacant);
+
+    // Corrected summation logic for total staff, iron, and vacancies
+    const totalStaff = data.reduce((sum, branch) => sum + (branch.amountOfPersonal || 0), 0);
+    const totalIron = data.reduce((sum, branch) => sum + (branch.iron || 0), 0);
+    const totalVacant = data.reduce((sum, branch) => sum + (branch.vacant || 0), 0);
 
     const totalItem = document.createElement('div');
     totalItem.className = 'bg-white shadow-lg rounded-lg p-4 flex flex-col items-start justify-between w-full';
@@ -63,13 +68,13 @@ async function fetchData(route, containerId) {
         <div class="flex items-center justify-between">
           <div>
             <p class="text-lg font-semibold">${branch.branch}</p>
-            <p class="text-sm text-gray-500">${branch.amountOfPersonal} ta xodim</p>
+            <p class="text-sm text-gray-500">${branch.amountOfPersonal || 0} ta xodim</p>
           </div>
-          <div class="text-2xl font-bold text-blue-600">${branch.amountOfPersonal}</div>
+          <div class="text-2xl font-bold text-blue-600">${branch.amountOfPersonal || 0}</div>
         </div>
         <div class="flex justify-between text-sm text-gray-500">
           <p class="text-yellow-500">Jelezniy grafik: ${branch.iron || 0}</p>
-          <p class="text-red-500">Vakansiya: ${branch.vacant}</p>
+          <p class="text-red-500">Vakansiya: ${branch.vacant || 0}</p>
         </div>
       `;
       branchList.appendChild(branchItem);
@@ -86,18 +91,24 @@ async function fetchData(route, containerId) {
 
 // Show loader and hide content during updates
 function showLoader() {
-  document.getElementById('loading').classList.remove('hidden');
-  document.getElementById('content').classList.add('hidden');
+  if (initialLoad) {
+    document.getElementById('loading').classList.remove('hidden');
+    document.getElementById('content').classList.add('hidden');
+  }
 }
 
 // Hide loader and show content after updates
 function hideLoader() {
-  document.getElementById('loading').classList.add('hidden');
-  document.getElementById('content').classList.remove('hidden');
+  if (initialLoad) {
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('content').classList.remove('hidden');
+    initialLoad = false; // Hide loader after initial load
+  }
 }
 
 // Fetch and display data for each route
 async function updateData() {
+  showLoader();
   let hasUpdates = false;
   const results = await Promise.all([
     fetchData('main', 'main-branch-list'),
@@ -107,8 +118,7 @@ async function updateData() {
 
   hasUpdates = results.includes(true);
 
-  if (hasUpdates) {
-    showLoader();
+  if (hasUpdates || initialLoad) {
     hideLoader();
   }
 }
