@@ -34,8 +34,8 @@ async function fetchData(route, containerId) {
 
     branchList.innerHTML = ''; // Clear the container
 
-    // Sort branches by number of vacancies in descending order
-    data.sort((a, b) => b.vacant - a.vacant);
+    // Sort branches by percentage in ascending order (from lowest to highest)
+    data.sort((a, b) => a.percent - b.percent);
 
     // Corrected summation logic for total staff, iron, vacancies, and percent
     const totalStaff = data.reduce((sum, branch) => sum + (branch.amountOfPersonal || 0), 0);
