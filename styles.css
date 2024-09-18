@@ -49,10 +49,6 @@
   background-color: #ff8a80; /* Красный для значений ниже 66% */
 }
 
-
-.text-iron {
-  color: #000!important;
-}
 .percent-up {
   color: green;
 }
@@ -68,32 +64,32 @@
 /* Hide columns on mobile and show based on tab selection */
 @media (max-width: 750px) {
   .tab-content {
-      display: none;
-      padding: 0;
+    display: none;
+    padding: 0;
   }
 
   .tab-content.active {
-      display: block;
-      padding: 16px 0;
+    display: block;
+    padding: 16px 0;
   }
 
   #mobile-tabs {
-      display: flex !important;
+    display: flex !important;
   }
 }
 
 /* Column layout for larger screens */
 @media (min-width: 751px) {
   .column {
-      flex: 1;
+    flex: 1;
   }
 
   #mobile-tabs {
-      display: none;
+    display: none;
   }
 
   .tab-content {
-      display: block !important;
-      padding: 16px 0;
+    display: block !important;
+    padding: 16px 0;
   }
 }

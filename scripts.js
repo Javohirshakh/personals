@@ -1,4 +1,4 @@
-const BASE_URL = 'https://script.google.com/macros/s/AKfycbzOteNyt6BEaMdSO1u92p2bq5xpwEfs_oGd-GiABUcVeIRdUHMxszPyOymudBhdiO-sxg/exec';
+const BASE_URL = 'https://script.google.com/macros/s/AKfycbzzHQNh08_MK_XgitxfPDpgcuSg1kUF53sxu3hBApBKqoUzE2zq38XVtkJmVHFKMBFKmQ/exec';
 const updateInterval = 60000; // 1 minute
 
 let previousData = {
@@ -37,31 +37,33 @@ async function fetchData(route, containerId) {
     // Sort branches by percentage in ascending order (from lowest to highest)
     data.sort((a, b) => a.percent - b.percent);
 
-    // Corrected summation logic for total staff, iron, vacancies, and percent
+    // Calculate totals for the summary card
     const totalStaff = data.reduce((sum, branch) => sum + (branch.amountOfPersonal || 0), 0);
     const totalIron = data.reduce((sum, branch) => sum + (branch.iron || 0), 0);
     const totalVacant = data.reduce((sum, branch) => sum + (branch.vacant || 0), 0);
     const totalPercent = (data.reduce((sum, branch) => sum + (branch.percent || 0), 0) / data.length).toFixed(2);
     const totalPrevPercent = (data.reduce((sum, branch) => sum + (branch.prevPercent || 0), 0) / data.length).toFixed(2);
 
-    // Determine total class based on total percent
-    let totalClass = 'item-high';
+    // Calculate totals for come and went for couriers
+    const totalCome = data.reduce((sum, branch) => sum + (branch.come || 0), 0);
+    const totalWent = data.reduce((sum, branch) => sum + (branch.went || 0), 0);
+
+    // Determine the class of the summary card based on the total percentage
+    let totalClass = 'item-high'; // Default is high percentage background
     if (totalPercent > 66 && totalPercent <= 80) {
       totalClass = 'item-medium';
     } else if (totalPercent <= 66) {
       totalClass = 'item-low';
     }
 
-    // Debug log for checking total percent
-    console.log(`Total Percent: ${totalPercent}, Total Class: ${totalClass}`);
-
-    const totalItem = document.createElement('div');
-    totalItem.className = `shadow-lg rounded-lg p-4 flex flex-col items-start justify-between w-full ${totalClass}`;
-    totalItem.innerHTML = `
+    // Create the summary card
+    const summaryItem = document.createElement('div');
+    summaryItem.className = `shadow-lg rounded-lg p-4 flex flex-col items-start justify-between w-full ${totalClass}`;
+    summaryItem.innerHTML = `
       <div class="flex justify-between w-full">
         <div>
           <p class="text-lg font-semibold">Umumiy xodimlar</p>
-          <p class="text-sm text-gray-500">Barcha filiallar xodimlari</p>
+          <p class="text-sm text-gray-500">Barcha filiallar</p>
         </div>
         <div class="text-2xl font-bold text-green-600">${totalStaff}</div>
       </div>
@@ -73,10 +75,11 @@ async function fetchData(route, containerId) {
         <p class="text-blue-500">Hozirgi hafta: ${totalPercent}%</p>
         <p class="text-gray-500">Oldingi hafta: ${totalPrevPercent}%</p>
       </div>
+      ${route === 'courier' ? `<div class="flex justify-between w-full text-sm"><p class="text-blue-500">Kelgan: ${totalCome}</p><p class="text-red-500">Ketgan: ${totalWent}</p></div>` : ''}
     `;
-    branchList.appendChild(totalItem);
+    branchList.appendChild(summaryItem);
 
-    // Create individual branch items with `percent` and `prevPercent` data
+    // Create individual branch items
     data.forEach(branch => {
       const percentDiff = branch.percent - branch.prevPercent;
       let percentClass = 'percent-same';
@@ -98,9 +101,7 @@ async function fetchData(route, containerId) {
         itemClass = 'item-low';
       }
 
-      // Debug log for checking branch percent and applied class
-      console.log(`Branch: ${branch.branch}, Percent: ${branch.percent}, Class: ${itemClass}`);
-
+      // Add the item to the branch list
       const branchItem = document.createElement('div');
       branchItem.className = `shadow-lg rounded-lg p-4 w-full space-y-2 ${itemClass}`;
       
@@ -120,6 +121,7 @@ async function fetchData(route, containerId) {
           <p class="${percentClass}">Hozirgi hafta: ${branch.percent.toFixed(2)}% ${percentArrow}</p>
           <p class="text-gray-500">Oldingi hafta: ${branch.prevPercent.toFixed(2)}%</p>
         </div>
+        ${route === 'courier' ? `<div class="flex justify-between text-sm"><p class="text-blue-500">Kelgan: ${branch.come}</p><p class="text-red-500">Ketgan: ${branch.went}</p></div>` : ''}
       `;
       branchList.appendChild(branchItem);
     });
