@@ -1,4 +1,4 @@
-const BASE_URL = 'https://script.google.com/macros/s/AKfycbzzHQNh08_MK_XgitxfPDpgcuSg1kUF53sxu3hBApBKqoUzE2zq38XVtkJmVHFKMBFKmQ/exec';
+const BASE_URL = 'https://script.google.com/macros/s/AKfycbwPAetwHpx6zr9datFb8rdRS8JYBlOqJhK3wd2J_CdTfCpMVmacmoMSngjnQC2S5rNWWg/exec';
 const updateInterval = 60000; // 1 minute
 
 let previousData = {
@@ -44,7 +44,7 @@ async function fetchData(route, containerId) {
     const totalPercent = (data.reduce((sum, branch) => sum + (branch.percent || 0), 0) / data.length).toFixed(2);
     const totalPrevPercent = (data.reduce((sum, branch) => sum + (branch.prevPercent || 0), 0) / data.length).toFixed(2);
 
-    // Calculate totals for come and went for couriers
+    // Calculate totals for come and went for couriers and main
     const totalCome = data.reduce((sum, branch) => sum + (branch.come || 0), 0);
     const totalWent = data.reduce((sum, branch) => sum + (branch.went || 0), 0);
 
@@ -75,7 +75,7 @@ async function fetchData(route, containerId) {
         <p class="text-blue-500">Hozirgi hafta: ${totalPercent}%</p>
         <p class="text-gray-500">Oldingi hafta: ${totalPrevPercent}%</p>
       </div>
-      ${route === 'courier' ? `<div class="flex justify-between w-full text-sm"><p class="text-blue-500">Kelgan: ${totalCome}</p><p class="text-red-500">Ketgan: ${totalWent}</p></div>` : ''}
+      ${route === 'courier' || route === 'main' ? `<div class="flex justify-between w-full text-sm"><p class="text-blue-500">Kelgan: ${totalCome}</p><p class="text-red-500">Ketgan: ${totalWent}</p></div>` : ''}
     `;
     branchList.appendChild(summaryItem);
 
@@ -121,7 +121,7 @@ async function fetchData(route, containerId) {
           <p class="${percentClass}">Hozirgi hafta: ${branch.percent.toFixed(2)}% ${percentArrow}</p>
           <p class="text-gray-500">Oldingi hafta: ${branch.prevPercent.toFixed(2)}%</p>
         </div>
-        ${route === 'courier' ? `<div class="flex justify-between text-sm"><p class="text-blue-500">Kelgan: ${branch.come}</p><p class="text-red-500">Ketgan: ${branch.went}</p></div>` : ''}
+        ${route === 'courier' || route === 'main' ? `<div class="flex justify-between text-sm"><p class="text-blue-500">Kelgan: ${branch.come}</p><p class="text-red-500">Ketgan: ${branch.went}</p></div>` : ''}
       `;
       branchList.appendChild(branchItem);
     });
