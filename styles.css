@@ -61,6 +61,11 @@
   color: blue;
 }
 
+
+.text-iron {
+  color: #000!important;
+}
+
 /* Hide columns on mobile and show based on tab selection */
 @media (max-width: 750px) {
   .tab-content {

@@ -114,7 +114,7 @@ async function fetchData(route, containerId) {
           <div class="text-2xl font-bold text-blue-600">${branch.amountOfPersonal || 0}</div>
         </div>
         <div class="flex justify-between text-sm text-gray-500">
-          <p class="text-iron text-yellow-500">Jelezniy grafik: ${branch.iron || 0}</p>
+          <p class="text-iron">Jelezniy grafik: ${branch.iron || 0}</p>
           <p class="text-red-500">Vakansiya: ${branch.vacant || 0}</p>
         </div>
         <div class="flex justify-between text-sm">
